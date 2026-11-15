@@ -41,6 +41,8 @@ class MyHomePage extends StatelessWidget {
         _showActionFeedback(context, item);
         return;
       case PortfolioAction.showOverview:
+        // Tampilkan umpan balik yang sama seperti kartu aksi lainnya.
+        _showActionFeedback(context, item);
         _showPortfolioOverview(context);
         return;
     }
@@ -173,10 +175,7 @@ class InfoCard extends StatelessWidget {
 }
 
 /// Menentukan respons saat kartu aksi pada halaman utama ditekan.
-enum PortfolioAction {
-  showFeedback,
-  showOverview,
-}
+enum PortfolioAction { showFeedback, showOverview }
 
 /// Model data untuk satu aksi pada halaman utama.
 class ItemHomepage {
@@ -274,9 +273,8 @@ class PortfolioOverviewSheet extends StatelessWidget {
                 Expanded(
                   child: Text(
                     'Ringkasan Portofolio',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: Theme.of(context).textTheme.titleLarge
+                        ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
