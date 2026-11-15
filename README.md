@@ -259,6 +259,32 @@ Pada proyek ini, `build(BuildContext context)` menggunakan context untuk mengamb
 
 Dalam praktiknya, gunakan hot reload untuk perubahan UI dan logika Dart biasa. Gunakan hot restart ketika perubahan memerlukan inisialisasi ulang aplikasi atau ketika hot reload tidak menerapkan perubahan yang diharapkan. Gunakan full restart ketika perubahan berada pada lapisan native atau konfigurasi build platform.
 
+## Fitur tambahan/kreativitas
+
+Selain memenuhi persyaratan utama Individual Assignment 7, saya mengembangkan beberapa fitur tambahan untuk meningkatkan interaktivitas, responsivitas, dan struktur kode aplikasi MyPortfolio Mobile.
+
+Kartu Tambahan "Tentang Portofolio"
+
+Saya menambahkan kartu aksi keempat bernama "Tentang Portofolio" dengan warna latar blue-grey. Kartu ini merupakan fitur tambahan di luar tiga tombol utama yang diwajibkan dalam tugas. Penambahan kartu ini memberikan akses kepada pengguna untuk mengenal aplikasi dan informasi pemilik portofolio lebih lanjut.
+
+Bottom Sheet Interaktif
+
+Ketika pengguna menekan kartu "Tentang Portofolio", aplikasi menampilkan Bottom Sheet yang berisi ringkasan aplikasi, identitas pemilik portofolio, serta informasi teknologi yang berkaitan dengan pengembangan aplikasi. Saya juga menambahkan tombol "Tutup" agar pengguna dapat menutup Bottom Sheet dan kembali ke halaman utama tanpa harus berpindah halaman.
+
+Struktur Aksi yang Modular
+
+Saya menerapkan struktur kode yang lebih modular dengan menggunakan enum PortfolioAction untuk menentukan jenis aksi setiap kartu. Selain itu, widget ItemCard menerima callback melalui parameter onTap, sehingga logika interaksi dapat dipisahkan dari tampilan kartu. Saya juga memisahkan tampilan Bottom Sheet ke dalam widget khusus agar kode lebih mudah dibaca, dikelola, dan dikembangkan.
+
+Grid Responsif
+
+Saya mengimplementasikan tampilan menu menggunakan LayoutBuilder agar susunan kartu dapat menyesuaikan ukuran layar perangkat. Pada layar mobile, kartu ditampilkan dalam dua kolom, sedangkan pada layar yang lebih lebar, kartu ditampilkan dalam empat kolom. Dengan demikian, tampilan aplikasi tetap terorganisasi pada berbagai ukuran layar.
+
+Pengujian Widget untuk Bottom Sheet
+
+Saya menambahkan pengujian widget pada widget_test.dart untuk memeriksa interaksi kartu "Tentang Portofolio". Pengujian ini mencakup proses membuka Bottom Sheet, memverifikasi informasi yang ditampilkan, menekan tombol "Tutup", serta memastikan Bottom Sheet berhasil ditutup.
+
+Melalui pengembangan fitur-fitur tambahan tersebut, saya berusaha membuat MyPortfolio Mobile tidak hanya memenuhi kebutuhan dasar tugas, tetapi juga memiliki pengalaman pengguna yang lebih interaktif, tampilan yang responsif, serta struktur kode yang modular dan mudah dikembangkan.
+
 ## AI Disclosure
 
 AI digunakan sebagai alat bantu selama pengerjaan, bukan sebagai pengganti pemahaman, keputusan, atau tanggung jawab pengembang. Informasi berikut menjelaskan penggunaan AI pada tugas ini secara spesifik.
