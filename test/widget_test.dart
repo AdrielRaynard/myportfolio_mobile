@@ -23,12 +23,14 @@ void main() {
       ),
       findsOneWidget,
     );
+
     expect(
       find.byWidgetPredicate(
         (Widget widget) => widget is Material && widget.color == Colors.teal,
       ),
       findsOneWidget,
     );
+
     expect(
       find.byWidgetPredicate(
         (Widget widget) =>
@@ -36,6 +38,7 @@ void main() {
       ),
       findsOneWidget,
     );
+
     expect(
       find.byWidgetPredicate(
         (Widget widget) =>
@@ -56,11 +59,16 @@ void main() {
 
     for (final String action in actions) {
       await tester.pumpWidget(const MyApp());
+
       await tester.tap(find.text(action));
-      await tester.pump();
+
+      // Tunggu animasi SnackBar sampai selesai.
+      await tester.pumpAndSettle();
 
       expect(find.text('Kamu telah menekan tombol $action!'), findsOneWidget);
 
+      // Bersihkan SnackBar sebelum menguji aksi berikutnya.
+      await tester.pump(const Duration(seconds: 5));
       await tester.pumpAndSettle();
     }
   });
@@ -69,10 +77,12 @@ void main() {
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(const MyApp());
+
     await tester.tap(find.text('Tentang Portofolio'));
     await tester.pumpAndSettle();
 
     expect(find.text('Ringkasan Portofolio'), findsOneWidget);
+
     expect(
       find.text(
         'MyPortfolio Mobile adalah ruang awal untuk menyajikan profil '
@@ -80,6 +90,7 @@ void main() {
       ),
       findsOneWidget,
     );
+
     expect(find.text('2506587150 - PBP B'), findsOneWidget);
 
     await tester.tap(find.text('Tutup'));
