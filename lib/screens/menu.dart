@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:myportofolio_mobile/widgets/left_drawer.dart';
+import 'package:myportofolio_mobile/widgets/project_card.dart';
 
 /// Halaman utama yang menampilkan profil dan menu aksi portofolio.
 class MyHomePage extends StatelessWidget {
@@ -41,7 +43,6 @@ class MyHomePage extends StatelessWidget {
         _showActionFeedback(context, item);
         return;
       case PortfolioAction.showOverview:
-        // Tampilkan umpan balik yang sama seperti kartu aksi lainnya.
         _showActionFeedback(context, item);
         _showPortfolioOverview(context);
         return;
@@ -77,7 +78,9 @@ class MyHomePage extends StatelessWidget {
         ),
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
+      drawer: const LeftDrawer(),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -190,50 +193,6 @@ class ItemHomepage {
     required this.color,
     required this.action,
   });
-}
-
-/// Kartu aksi yang meneruskan interaksi ke halaman utama.
-class ItemCard extends StatelessWidget {
-  final ItemHomepage item;
-  final VoidCallback onTap;
-
-  const ItemCard({super.key, required this.item, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      label: item.name,
-      child: Material(
-        color: item.color,
-        borderRadius: BorderRadius.circular(16),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(item.icon, color: Colors.white, size: 32),
-                  const SizedBox(height: 8),
-                  Text(
-                    item.name,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 /// Bottom sheet yang menyajikan ringkasan singkat portofolio pemilik aplikasi.
