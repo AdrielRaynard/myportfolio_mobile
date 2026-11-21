@@ -68,7 +68,7 @@ class _EducationFormPageState extends State<EducationFormPage> {
         backgroundColor: colors.primary,
         foregroundColor: colors.onPrimary,
       ),
-      drawer: const LeftDrawer(),
+      drawer: const LeftDrawer(current: DrawerDestination.education),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
