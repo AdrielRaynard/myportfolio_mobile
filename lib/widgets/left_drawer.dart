@@ -1,8 +1,9 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/screens/education_form.dart';
+import 'package:myportofolio_mobile/screens/education_list.dart';
 import 'package:myportofolio_mobile/screens/project_form.dart';
 
-enum DrawerDestination { home, project, education }
+enum DrawerDestination { home, project, education, educationList }
 
 class LeftDrawer extends StatelessWidget {
   const LeftDrawer({super.key, required this.current});
@@ -14,16 +15,19 @@ class LeftDrawer extends StatelessWidget {
     navigator.pop(); // Tutup drawer sebelum berpindah halaman.
     if (destination == current) return;
 
-    if (destination == DrawerDestination.home) {
-      navigator.popUntil((route) => route.isFirst);
-      return;
+    final Widget page;
+    switch (destination) {
+      case DrawerDestination.home:
+        navigator.popUntil((route) => route.isFirst);
+        return;
+      case DrawerDestination.education:
+        page = const EducationFormPage();
+      case DrawerDestination.project:
+        page = const ProjectFormPage();
+      case DrawerDestination.educationList:
+        page = const EducationListPage();
     }
-
-    final route = MaterialPageRoute<void>(
-      builder: (_) => destination == DrawerDestination.education
-          ? const EducationFormPage()
-          : const ProjectFormPage(),
-    );
+    final route = MaterialPageRoute<void>(builder: (_) => page);
     if (current == DrawerDestination.home) {
       navigator.push(route);
     } else {
@@ -77,6 +81,12 @@ class LeftDrawer extends StatelessWidget {
             title: const Text('Tambah Pendidikan'),
             selected: current == DrawerDestination.education,
             onTap: () => _navigate(context, DrawerDestination.education),
+          ),
+          ListTile(
+            leading: const Icon(Icons.list_alt_outlined),
+            title: const Text('Daftar Pendidikan'),
+            selected: current == DrawerDestination.educationList,
+            onTap: () => _navigate(context, DrawerDestination.educationList),
           ),
         ],
       ),

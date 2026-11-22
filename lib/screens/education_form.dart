@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/models/education.dart';
+import 'package:myportofolio_mobile/models/education_history.dart';
 import 'package:myportofolio_mobile/validation/education_validators.dart';
 import 'package:myportofolio_mobile/widgets/left_drawer.dart';
 
@@ -42,6 +43,7 @@ class _EducationFormPageState extends State<EducationFormPage> {
       graduationYear: int.tryParse(_graduation.text.trim(), radix: 10),
       description: EducationValidators.plainText(_description.text),
     );
+    EducationHistory.of(context).add(education);
     showDialog<void>(
       context: context,
       builder: (context) => _EducationSummary(education: education),

@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/screens/education_form.dart';
+import 'package:myportofolio_mobile/screens/education_list.dart';
 import 'package:myportofolio_mobile/widgets/left_drawer.dart';
 import 'package:myportofolio_mobile/widgets/project_card.dart';
 
@@ -42,10 +43,22 @@ class MyHomePage extends StatelessWidget {
       color: Colors.deepPurple,
       action: PortfolioAction.addEducation,
     ),
+    ItemHomepage(
+      name: 'Daftar Pendidikan',
+      icon: Icons.list_alt_outlined,
+      color: Colors.indigoAccent,
+      action: PortfolioAction.listEducation,
+    ),
   ];
 
   void _handleItemTap(BuildContext context, ItemHomepage item) {
     switch (item.action) {
+      case PortfolioAction.listEducation:
+        Navigator.push<void>(
+          context,
+          MaterialPageRoute<void>(builder: (_) => const EducationListPage()),
+        );
+        return;
       case PortfolioAction.addEducation:
         Navigator.push<void>(
           context,
@@ -141,7 +154,6 @@ class MyHomePage extends StatelessWidget {
                       crossAxisCount: isWideScreen ? 4 : 2,
                       crossAxisSpacing: 12,
                       mainAxisSpacing: 12,
-                      childAspectRatio: isWideScreen ? 1 : 1.25,
                     ),
                     itemBuilder: (BuildContext context, int index) {
                       final ItemHomepage item = _items[index];
@@ -191,7 +203,7 @@ class InfoCard extends StatelessWidget {
 }
 
 /// Menentukan respons saat kartu aksi pada halaman utama ditekan.
-enum PortfolioAction { showFeedback, showOverview, addEducation }
+enum PortfolioAction { showFeedback, showOverview, addEducation, listEducation }
 
 /// Model data untuk satu aksi pada halaman utama.
 class ItemHomepage {

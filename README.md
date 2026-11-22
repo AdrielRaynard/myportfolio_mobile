@@ -34,6 +34,18 @@ Aplikasi ini menampilkan identitas pemilik portofolio, menyediakan beberapa kart
 
 > **Batasan fungsional saat ini:** `Lihat Proyek`, `Tambah Proyek`, dan `Logout` masih berupa demonstrasi interaksi yang menampilkan `SnackBar`. Ketiganya belum membuka daftar proyek, menyimpan proyek baru, atau mengakhiri sesi autentikasi. Aplikasi pada tugas ini belum menggunakan backend, database, maupun sistem login.
 
+### Daftar Pendidikan
+
+Buka **Daftar Pendidikan** dari kartu beranda atau drawer. Setiap kartu menampilkan sekolah, jenjang, periode, serta jurusan dan deskripsi bila diisi. Tahun lulus yang kosong ditampilkan sebagai **Sekarang**.
+
+Saat pertama dibuka, daftar menampilkan **Semua** jenjang dengan urutan **Terbaru ke terlama** berdasarkan tahun masuk. Tiga entri awal berasal dari migrasi pendidikan aplikasi web, yaitu Fakultas Ilmu Komputer, Universitas Indonesia (2025), SMAK PENABUR Bintaro Jaya (2022), dan SMPK PENABUR Bintaro Jaya (2019).
+
+Untuk mencoba kedua kontrol, buka **Tambah Pendidikan** dan simpan satu sekolah berjenjang **SMA/SMK** dengan tahun masuk **2020**. Setelah menutup ringkasan, buka **Daftar Pendidikan** dari drawer, pilih **SMA/SMK**, lalu pilih **Terlama ke terbaru**. Sekolah tahun 2020 muncul sebelum SMAK PENABUR Bintaro Jaya (2022). Balik urutannya untuk melihat sekolah tahun 2022 di atas. Memilih jenjang yang masih kosong, misalnya **S2**, menampilkan pesan “Belum ada riwayat pendidikan S2.”
+
+Jika dua sekolah memiliki tahun masuk yang sama, nama sekolah menentukan urutan alfabetisnya. Entri tambahan tersedia selama sesi aplikasi. Saat aplikasi dimulai ulang, daftar kembali ke tiga entri awal.
+
+Jalankan `flutter test test/education_list_test.dart` untuk menguji daftar awal, filter kosong, kombinasi filter dan urutan, serta masa simpan entri baru.
+
 ## Teknologi dan dependensi
 
 - **Flutter** untuk membangun antarmuka aplikasi multiplatform.

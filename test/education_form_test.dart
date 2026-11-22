@@ -4,32 +4,11 @@ import 'package:myportofolio_mobile/main.dart';
 import 'package:myportofolio_mobile/screens/education_form.dart';
 import 'package:myportofolio_mobile/screens/menu.dart';
 
+import 'helpers/education_navigation.dart';
+
 const school = 'Nama Sekolah / Universitas';
 const startYear = 'Tahun Masuk';
 const graduationYear = 'Tahun Lulus (opsional)';
-
-Future<void> enterField(WidgetTester tester, String label, String value) async {
-  final field = find.widgetWithText(TextFormField, label);
-  await tester.ensureVisible(field);
-  await tester.enterText(field, value);
-  await tester.pumpAndSettle();
-}
-
-Future<void> saveForm(WidgetTester tester) async {
-  final save = find.widgetWithText(FilledButton, 'Simpan');
-  await tester.ensureVisible(save);
-  await tester.pumpAndSettle();
-  expect(save.hitTestable(), findsOneWidget);
-  await tester.tap(save);
-  await tester.pumpAndSettle();
-}
-
-Future<void> chooseFromDrawer(WidgetTester tester, String label) async {
-  await tester.tap(find.byType(DrawerButton));
-  await tester.pumpAndSettle();
-  await tester.tap(find.widgetWithText(ListTile, label));
-  await tester.pumpAndSettle();
-}
 
 void expectHome(WidgetTester tester) {
   final home = find.byType(MyHomePage);
@@ -51,11 +30,7 @@ void main() {
   testWidgets(
     'kartu membuka formulir dan tombol kembali perangkat menuju beranda',
     (tester) async {
-      await tester.pumpWidget(const MyApp());
-      final card = find.text('Tambah Pendidikan');
-      await tester.ensureVisible(card);
-      await tester.tap(card);
-      await tester.pumpAndSettle();
+      await openForm(tester);
       expect(find.byType(EducationFormPage), findsOneWidget);
 
       await tester.binding.handlePopRoute();
@@ -78,7 +53,7 @@ void main() {
   testWidgets(
     'Simpan menandai kedua isian wajib yang kosong atau hanya spasi',
     (tester) async {
-      await tester.pumpWidget(const MaterialApp(home: EducationFormPage()));
+      await openForm(tester);
       for (final input in ['', '   ']) {
         await enterField(tester, school, input);
         await enterField(tester, startYear, input);
@@ -102,7 +77,7 @@ void main() {
   testWidgets(
     'kesalahan urutan tahun muncul di kolom Tahun Lulus dan bisa diperbaiki',
     (tester) async {
-      await tester.pumpWidget(const MaterialApp(home: EducationFormPage()));
+      await openForm(tester);
       await enterField(tester, school, 'SMA Melati');
       await enterField(tester, startYear, '2025');
       await enterField(tester, graduationYear, '2024');
@@ -127,7 +102,7 @@ void main() {
   testWidgets(
     'ringkasan menampilkan keenam nilai dan Tutup mengembalikan pengguna ke formulir',
     (tester) async {
-      await tester.pumpWidget(const MaterialApp(home: EducationFormPage()));
+      await openForm(tester);
       await enterField(tester, school, 'Universitas Melati');
       await tester.tap(find.text('S1 (Sarjana)'));
       await tester.pumpAndSettle();
@@ -166,7 +141,7 @@ void main() {
       tester.view.devicePixelRatio = 1;
       tester.view.physicalSize = const Size(320, 568);
       addTearDown(tester.view.reset);
-      await tester.pumpWidget(const MaterialApp(home: EducationFormPage()));
+      await openForm(tester);
       await enterField(tester, school, 'SMA Melati');
       await enterField(tester, startYear, '2025');
       tester.view.viewInsets = const FakeViewPadding(bottom: 240);

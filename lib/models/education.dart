@@ -10,6 +10,11 @@ enum EducationLevel {
 
   final String code;
   final String label;
+
+  String get shortLabel => switch (this) {
+    smp || sma => label,
+    s1 || s2 || s3 => code,
+  };
 }
 
 class Education {
