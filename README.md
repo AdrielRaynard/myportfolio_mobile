@@ -1,8 +1,6 @@
 # MyPortfolio Mobile
 
-Aplikasi portofolio pribadi berbasis Flutter sebagai kelanjutan dari proyek Tutorial 08 untuk **Individual Assignment 7: Basic Flutter** pada mata kuliah **Pemrograman Berbasis Platform (CSGE602022)**, Fakultas Ilmu Komputer, Universitas Indonesia, Semester Gasal 2026/2027.
-
-Aplikasi ini menampilkan identitas pemilik portofolio, menyediakan beberapa kartu aksi, dan menyajikan ringkasan portofolio melalui bottom sheet. Implementasi berfokus pada widget tree Flutter, pemisahan widget menjadi komponen yang dapat digunakan kembali, `StatelessWidget`, penggunaan `BuildContext`, serta interaksi dasar Material Design 3.
+Aplikasi Flutter untuk Tugas 7 dan 8 Pemrograman Berbasis Platform (CSGE602022), Fakultas Ilmu Komputer Universitas Indonesia, Semester Gasal 2026/2027. Homepage menampilkan profil Adriel Raynard Davis Sihotang. User dapat membuka formulir proyek, menambahkan riwayat pendidikan, dan melihat daftar pendidikan berdasarkan jenjang atau tahun masuk.
 
 ## Daftar Isi
 
@@ -13,26 +11,23 @@ Aplikasi ini menampilkan identitas pemilik portofolio, menyediakan beberapa kart
 - [Pengujian dan analisis kode](#pengujian-dan-analisis-kode)
 - [Catatan implementasi](#catatan-implementasi)
 - [Progres pengerjaan](#progres-pengerjaan)
+- [Tugas 8 — formulir, navigasi, dan refleksi](#tugas-8)
 - [Tugas 7](#tugas-7)
 - [AI Disclosure](#ai-disclosure)
 
 ## Fitur
 
-### Fitur utama sesuai tugas
+### Menu beranda
 
-- **Informasi profil:** menampilkan NPM `2506587150`, nama `Adriel Raynard Davis Sihotang`, dan kelas `PBP B` melalui tiga komponen `InfoCard`.
-- **Kartu aksi portofolio:** menyediakan tombol `Lihat Proyek`, `Tambah Proyek`, dan `Logout`, masing-masing dengan ikon serta warna latar berbeda.
-- **Umpan balik interaksi:** ketika salah satu dari tiga kartu aksi utama ditekan, aplikasi menampilkan `SnackBar` dengan format pesan `Kamu telah menekan tombol [Nama Tombol]!`.
-- **Struktur widget:** halaman utama dipisahkan ke `lib/menu.dart`, sedangkan bootstrap aplikasi berada di `lib/main.dart`. `MyHomePage` dan komponen tampilannya menggunakan `StatelessWidget`.
+| Kartu | Saat ditekan |
+|---|---|
+| Lihat Proyek dan Logout | Menampilkan umpan balik melalui `SnackBar`. |
+| Tambah Proyek | Membuka formulir proyek. **Save** memvalidasi isian lalu menampilkan ringkasan. |
+| Tentang Portofolio | Membuka ringkasan profil dalam *bottom sheet* yang dapat ditutup. |
+| Tambah Pendidikan | Membuka formulir pendidikan. **Simpan** menampilkan ringkasan dan menambahkan entri yang valid ke daftar sesi. |
+| Daftar Pendidikan | Menampilkan kartu riwayat dengan filter jenjang dan pilihan urutan. |
 
-### Fitur ekstra dan peningkatan UI/UX
-
-- **Tentang Portofolio:** kartu aksi keempat yang membuka modal bottom sheet berisi ringkasan aplikasi, nama pemilik, identitas NPM dan kelas, serta chip teknologi/topik (`Flutter`, `Material 3`, dan `PBP`). Bottom sheet dapat ditutup melalui tombol `Tutup`.
-- **Grid responsif:** jumlah kolom kartu aksi menyesuaikan lebar yang tersedia. Tampilan menggunakan dua kolom pada lebar di bawah 600 logical pixels dan empat kolom mulai dari 600 logical pixels.
-- **Semantics untuk kartu aksi:** setiap kartu dibungkus dengan `Semantics` dan diberi label serta penanda bahwa elemen tersebut merupakan tombol.
-- **Material Design 3:** tema aplikasi dibuat dengan `ColorScheme.fromSeed` dan `useMaterial3: true`.
-
-> **Batasan fungsional saat ini:** `Lihat Proyek`, `Tambah Proyek`, dan `Logout` masih berupa demonstrasi interaksi yang menampilkan `SnackBar`. Ketiganya belum membuka daftar proyek, menyimpan proyek baru, atau mengakhiri sesi autentikasi. Aplikasi pada tugas ini belum menggunakan backend, database, maupun sistem login.
+Kartu beranda tersusun dalam dua kolom pada ponsel dan empat kolom ketika lebar area menu mencapai 600 piksel logis. Drawer menyediakan **Home**, **Add Project**, **Tambah Pendidikan**, dan **Daftar Pendidikan**.
 
 ### Daftar Pendidikan
 
@@ -51,38 +46,25 @@ Jalankan `flutter test test/education_list_test.dart` untuk menguji daftar awal,
 - **Flutter** untuk membangun antarmuka aplikasi multiplatform.
 - **Dart** sebagai bahasa pemrograman.
 - **Material Design 3** untuk sistem tema dan komponen UI.
+- `material_ui: ^1.11.1` untuk komponen Material yang diimpor oleh layar aplikasi.
 - `cupertino_icons: ^1.0.8` sebagai dependensi ikon.
 - `flutter_test` untuk widget testing.
 - `flutter_lints: ^6.0.0` untuk aturan analisis/lint Dart.
 
-Versi SDK Dart yang dideklarasikan proyek pada `pubspec.yaml` adalah `^3.13.7`. Gunakan Flutter SDK yang menyertakan versi Dart yang memenuhi constraint tersebut.
+Versi SDK Dart yang dideklarasikan proyek pada `pubspec.yaml` adalah `^3.13.7`. Gunakan Flutter SDK yang menyertakan versi Dart yang memenuhi constraintnya.
 
 ## Struktur proyek
 
-```text
-myportofolio_mobile/
-├── lib/
-│   ├── main.dart          # Entry point, MyApp, MaterialApp, dan tema aplikasi
-│   └── menu.dart          # MyHomePage dan seluruh widget/komponen halaman utama
-├── test/
-│   └── widget_test.dart   # Pengujian widget halaman utama dan interaksinya
-├── android/               # Konfigurasi platform Android
-├── ios/                   # Konfigurasi platform iOS
-├── web/                   # Konfigurasi platform web
-├── windows/               # Konfigurasi platform Windows
-├── linux/                 # Konfigurasi platform Linux
-├── macos/                 # Konfigurasi platform macOS
-├── analysis_options.yaml  # Konfigurasi lint/analyzer
-├── pubspec.yaml           # Metadata proyek dan dependensi
-├── pubspec.lock           # Versi dependensi yang terkunci
-└── README.md              # Dokumentasi proyek
-```
-
-### Pembagian tanggung jawab kode
-
-- **`lib/main.dart`**: menjalankan `runApp(const MyApp())`. `MyApp` mengatur `MaterialApp`, judul aplikasi, tema Material 3, dan `MyHomePage` sebagai halaman awal.
-- **`lib/menu.dart`**: mendefinisikan `MyHomePage`, data profil, daftar item aksi, alur penanganan tap, serta komponen UI yang digunakan pada halaman utama dan bottom sheet.
-- **`test/widget_test.dart`**: memeriksa tampilan profil dan kartu aksi, warna kartu, pesan `SnackBar`, serta perilaku buka/tutup bottom sheet.
+| Lokasi | Tanggung jawab |
+|---|---|
+| [lib/main.dart](lib/main.dart) | Menyiapkan tema dan beranda. `_MyAppState` menyimpan entri pendidikan selama sesi aplikasi. |
+| [lib/screens/menu.dart](lib/screens/menu.dart) dan [lib/widgets/project_card.dart](lib/widgets/project_card.dart) | Menampilkan profil, kartu menu, dan ringkasan portofolio. |
+| [lib/widgets/left_drawer.dart](lib/widgets/left_drawer.dart) | Menampilkan tujuan yang sama di setiap layar dan mengatur riwayat navigasi. |
+| [lib/screens/project_form.dart](lib/screens/project_form.dart) | Menangani formulir proyek dari Tutorial 09. |
+| [lib/screens/education_form.dart](lib/screens/education_form.dart) dan [lib/validation/education_validators.dart](lib/validation/education_validators.dart) | Memisahkan isian dan dialog dari aturan teks dan tahun. |
+| [lib/models/education.dart](lib/models/education.dart) dan [lib/models/education_history.dart](lib/models/education_history.dart) | Mendefinisikan model, lima jenjang, data awal, dan akses ke riwayat dari tiap layar. |
+| [lib/screens/education_list.dart](lib/screens/education_list.dart) | Menyaring riwayat lalu mengurutkan salinannya untuk ditampilkan sebagai kartu. |
+| [test/](test/) | Berisi tes widget, tes validator, dan fungsi bantu navigasi. |
 
 ## Persiapan dan menjalankan aplikasi
 
@@ -113,75 +95,87 @@ flutter pub get
 flutter run
 ```
 
-Jika terdapat lebih dari satu perangkat/target yang tersedia, Flutter akan meminta pemilihan perangkat atau kamu dapat menentukan device melalui opsi `-d`.
+Untuk menjalankan versi web di Chrome, gunakan `flutter run -d chrome`. Perintah `flutter devices` menampilkan target yang terdeteksi.
 
 ## Pengujian dan analisis kode
 
-Jalankan widget test dari root folder proyek:
+Dari folder proyek, jalankan:
 
-```bash
+```sh
+flutter analyze
 flutter test
 ```
 
-Test yang tersedia saat ini mencakup:
+Pada **23 November 2026**, analisis kode selesai dengan `No issues found!` dan **17 dari 17 tes lulus** pada implementasi `315af74`. Pemeriksaan menggunakan dependensi lokal dengan opsi `--no-pub`.
 
-1. Memastikan NPM, nama, kelas, dan empat kartu aksi tampil, serta masing-masing kartu menggunakan warna yang diharapkan.
-2. Memastikan tiga aksi utama menampilkan pesan `SnackBar` yang sesuai dengan nama tombol.
-3. Memastikan kartu `Tentang Portofolio` membuka bottom sheet dengan informasi ringkasan, lalu tombol `Tutup` menutupnya.
+| Berkas | Tes | Perilaku yang diperiksa |
+|---|---:|---|
+| [widget_test.dart](test/widget_test.dart) | 5 | Profil dan kartu aksi, umpan balik, formulir proyek, serta ringkasan portofolio. |
+| [education_validators_test.dart](test/education_validators_test.dart) | 4 | Nama sekolah setelah markup dibersihkan, batas 255 karakter Unicode, batas tahun, serta hubungan tahun masuk dan lulus. |
+| [education_form_test.dart](test/education_form_test.dart) | 6 | Dua jalur masuk dan kembali ke beranda, pesan kesalahan, enam nilai ringkasan, serta tombol Simpan pada simulasi layar 320 × 568 dengan papan ketik terbuka. |
+| [education_list_test.dart](test/education_list_test.dart) | 2 | Urutan awal, jenjang kosong, kombinasi filter dan urutan untuk dua SMA, serta masa simpan entri. |
 
-Jalankan static analysis dengan:
+**Langkah uji manual di Chrome atau ponsel**
 
-```bash
-flutter analyze
-```
+1. Buka **Tambah Pendidikan** dari kartu beranda. Tekan **Simpan** saat isian kosong. Nama sekolah dan tahun masuk menampilkan pesan pada kolom masing-masing.
+2. Isi sekolah **SMA Melati**, jenjang **SMA/SMK**, tahun masuk **2020**, dan tahun lulus **2019**. Tekan **Simpan**. Perbaiki tahun lulus menjadi **2023**, simpan lagi, lalu cocokkan nilai di dialog. **Tutup** mengembalikan pengguna ke formulir dengan isian yang masih terlihat.
+3. Buka **Daftar Pendidikan** lewat drawer. Pilih **SMA/SMK**, lalu ubah urutan. Bandingkan posisi **SMA Melati (2020)** dan **SMAK PENABUR Bintaro Jaya (2022)**. Pilih **S2** pada sesi yang hanya berisi data awal dan contoh tadi untuk melihat pesan daftar kosong.
+4. Di Chrome, buka formulir lewat drawer, lalu pilih **Home** dari drawer formulir untuk kembali ke beranda. Di ponsel, buka formulir dari kartu dan coba tombol kembali perangkat. Buka lagi formulir, fokuskan kolom tahun, lalu gulir dan tekan **Simpan** saat papan ketik terbuka.
 
-Sebelum pengumpulan, pastikan test berhasil dan hasil analisis menunjukkan `No issues found!`. Jalankan juga aplikasi pada emulator/perangkat untuk memeriksa tata letak, keterbacaan teks, dan interaksi secara langsung. Dokumentasi ini tidak menyatakan bahwa perintah-perintah tersebut telah lulus pada mesin lokal; hasilnya perlu dikonfirmasi setelah dijalankan menggunakan Flutter SDK di lingkungan pengembangan.
+Hasil 17 tes di atas berasal dari pengujian otomatis. Langkah manual ini dapat dipakai untuk demonstrasi. Hasil uji langsung oleh pemilik pada browser atau perangkat fisik belum tercatat.
 
 ## Catatan implementasi
 
-### Model data kartu aksi
+Isian yang sedang diketik berada di `_EducationFormPageState`. Setelah validasi berhasil, `EducationHistory.of(context).add(education)` meneruskan satu objek `Education` ke `_MyAppState`. Karena pemilik daftar berada di atas `MaterialApp`, berpindah rute tidak menghapus entri. Filter dan urutan berada di `_EducationListPageState`, sehingga mengubah urutan tampilan tidak mengubah data sesi.
 
-`ItemHomepage` menyimpan properti yang diperlukan untuk menampilkan satu kartu aksi, yaitu `name`, `icon`, `color`, dan `action`. Daftar kartu dideklarasikan satu kali pada `MyHomePage`, sehingga warna serta perilaku masing-masing kartu ditentukan oleh data item, bukan oleh percabangan pewarnaan yang berulang di dalam `ItemCard`.
+### Model dan isian pendidikan
 
-`PortfolioAction` membedakan respons kartu yang menampilkan umpan balik (`showFeedback`) dengan kartu yang membuka ringkasan portofolio (`showOverview`). `ItemCard` bertanggung jawab pada tampilan dan meneruskan tap melalui callback `onTap`, sedangkan `MyHomePage` menentukan respons interaksinya.
+Saya memilih riwayat pendidikan karena tiap entri portofolio mempunyai jenjang dan periode yang bisa dibandingkan. Formulir Flutter mengikuti enam atribut `Education` di aplikasi Django. `EducationFormPage` menggunakan `StatefulWidget` untuk menyimpan lima pengendali teks dan satu pilihan jenjang. Semua isian berada di dalam satu `Form`. Setelah validasi berhasil, aplikasi menyimpan objek `Education` dalam riwayat sesi dan menampilkan keenam nilainya di `AlertDialog`.
 
-### Widget tree ringkas
-
-```text
-MyApp
-└── MaterialApp
-    └── MyHomePage
-        └── Scaffold
-            ├── AppBar
-            └── SafeArea
-                └── SingleChildScrollView
-                    └── Padding
-                        └── Column
-                            ├── Row
-                            │   ├── InfoCard (NPM)
-                            │   ├── InfoCard (Name)
-                            │   └── InfoCard (Class)
-                            ├── Text (pesan sambutan)
-                            ├── Text (judul menu)
-                            └── LayoutBuilder
-                                └── GridView.builder
-                                    └── ItemCard (sesuai data item)
-```
-
-Bottom sheet dibuat terpisah melalui `PortfolioOverviewSheet`, dengan `PortfolioDetail` sebagai komponen untuk setiap baris informasi.
+| Atribut web | Isian Flutter | Aturan |
+|---|---|---|
+| `nama_sekolah` | Nama Sekolah / Universitas | Wajib, maksimal 255 karakter. Spasi atau tag HTML saja ditolak. |
+| `tingkat` | Tingkat Pendidikan | Dropdown SMP, SMA/SMK, S1, S2, atau S3. Pilihan awal S1. |
+| `jurusan` | Jurusan | Opsional, maksimal 255 karakter. |
+| `tahun_masuk` | Tahun Masuk | Wajib, bilangan bulat dari 1900 hingga 2100. |
+| `tahun_lulus` | Tahun Lulus | Opsional, dalam rentang yang sama. Boleh sama dengan tahun masuk. Jika lebih awal, pesan kesalahan muncul pada kolom ini. |
+| `deskripsi` | Deskripsi Pendidikan | Teks beberapa baris, opsional. |
 
 ## Progres pengerjaan
 
-Proyek dikembangkan secara bertahap dari basis Tutorial 08. Riwayat commit berikut diambil dari repositori proyek pada saat dokumentasi ini disusun:
+| Pekan | Tanggal | Commit | Hasil |
+|---|---|---|---|
+| 16–22 November | 18 Nov | `3f6aeca` | Tutorial 09 menjadi dasar formulir proyek dan drawer. |
+| 16–22 November | 21 Nov | `dd71e2f` | Model, validator, dan formulir pendidikan dengan dialog ringkasan. |
+| 16–22 November | 21 Nov | `614627d` | Kartu beranda dan drawer terhubung ke formulir. |
+| 16–22 November | 22 Nov | `429388d` | Tes navigasi, validasi, dialog, dan layar sempit. |
+| 16–22 November | 22 Nov | `315af74` | Daftar pendidikan tersaring dan terurut dengan penyimpanan selama sesi. |
+| 23–29 November | 23 Nov | Dokumentasi | Refleksi, log penggunaan AI, dan pemeriksaan ulang seluruh suite tes. |
 
-| Tanggal | Commit | Perubahan |
-|---|---|---|
-| 11 Nov 2026 | `cd92ce5` | `Tutorial 08: Basic Flutter` — basis awal proyek Flutter. |
-| 14 Nov 2026 | `3ea8f21` | `Mengkustomisasi action cards portfolio` — kustomisasi kartu aksi dan warna. |
-| 14 Nov 2026 | `dbbd0d4` | `Mengcover home interaction portfolio` — pengujian widget untuk halaman utama dan interaksi. |
-| 15 Nov 2026 | `a4d0139` | `Menambahkan overview sheet portfolio` — fitur ekstra bottom sheet ringkasan portofolio. |
 
-Perubahan disimpan dalam beberapa commit terpisah agar progres dan tujuan setiap perubahan dapat ditelusuri. Dokumentasi tugas dan AI disclosure ini disiapkan sebagai perubahan README tersendiri setelah fitur utama, pengujian, dan fitur ekstra.
+## Refleksi tugas individu
+
+### Tugas 8
+
+1. **Apa perbedaan `Navigator.push()`, `Navigator.pushReplacement()`, dan `Navigator.pop()`? Bagaimana kartu membuka formulir dan bagaimana Home membawa pengguna kembali?**
+
+   Kartu **Tambah Pendidikan** memakai `Navigator.push()` untuk menaruh `EducationFormPage` di atas beranda. Beranda tetap berada di bawahnya, sehingga tombol kembali perangkat membuka beranda semula. `pushReplacement()` mengganti rute teratas. Saya memakainya ketika pengguna berpindah lewat drawer dari satu halaman sekunder ke halaman lain, misalnya dari formulir ke daftar. `pop()` menutup rute atau lapisan teratas. Contohnya, **Tutup** pada dialog memanggil `Navigator.pop(context)` sehingga pengguna melihat kembali formulir beserta isinya.
+
+   Untuk **Home**, `LeftDrawer` terlebih dahulu memanggil `navigator.pop()` untuk menutup drawer. Jika pengguna berada di halaman lain, `popUntil((route) => route.isFirst)` melepas rute sampai beranda yang sudah ada terlihat kembali. [Kartu beranda](lib/screens/menu.dart) · [Navigasi drawer](lib/widgets/left_drawer.dart)
+
+2. **Bagaimana `Scaffold`, `AppBar`, dan `Drawer` menjaga konsistensi halaman? Di mana warna tema yang sama digunakan?**
+
+   Setiap layar memakai `Scaffold` sebagai kerangka. Properti `appBar` menempatkan judul di atas, `drawer` menampilkan `LeftDrawer` dengan tujuan yang sama, dan `body` berisi konten khusus layar tersebut. Pengguna yang berpindah dari beranda ke formulir tetap menemukan **Home** di tempat yang sama. Latar app bar beranda, formulir pendidikan, dan daftar pendidikan mengambil warna `primary` dari tema yang dibentuk dengan `ColorScheme.fromSeed(seedColor: Colors.indigo, ...)`. Pada kedua layar pendidikan, warna teks dan ikon berasal dari `onPrimary`. [Tema](lib/main.dart) · [Beranda](lib/screens/menu.dart) · [Formulir](lib/screens/education_form.dart) · [Daftar](lib/screens/education_list.dart)
+
+3. **Mengapa formulir memakai susunan ini? Bagaimana jarak dan pengguliran membantu saat ruang layar terbatas?**
+
+   Keenam isian dan tombol **Simpan** disusun dalam satu `Column` agar pengguna bisa membaca dari atas ke bawah. Padding 16 piksel logis di tepi dan `Column.spacing` sebesar 16 memberi jarak antara kontrol, termasuk ketika pesan kesalahan menambah tinggi isian. `ConstrainedBox` membatasi lebar formulir hingga 560 piksel logis di layar lebar. Saat papan ketik memperkecil area yang terlihat, `SingleChildScrollView` memungkinkan pengguna menggulir sampai **Simpan**. Tes pada layar 320 × 568 memeriksa posisi tombol di atas papan ketik dan menekannya sampai ringkasan terbuka. [Tata letak](lib/screens/education_form.dart) · [Tes layar sempit](test/education_form_test.dart)
+
+4. **Apa peran `GlobalKey<FormState>`, `validator`, dan `validate()` saat Simpan ditekan? Mengapa pemilihan jenis input belum cukup?**
+
+   `_formKey` menghubungkan tombol **Simpan** ke `FormState` milik formulir. Di `_submit()`, `_formKey.currentState!.validate()` menjalankan validator yang terpasang pada setiap kolom. Validator mengembalikan pesan untuk nilai yang salah dan `null` untuk nilai yang diterima. Jika ada kesalahan, Flutter menampilkan pesan pada kolom terkait dan `_submit()` berhenti. Setelah semua kolom lolos, aplikasi membuat objek `Education`, menyimpannya untuk sesi berjalan, lalu membuka dialog ringkasan.
+
+   Contohnya, jika tahun masuk **2020** dan tahun lulus **2019**, kedua nilai berupa bilangan bulat dalam rentang yang diizinkan. Namun, validator **Tahun Lulus** membaca kedua tahun dan menolak **2019** karena pendidikan belum dimulai saat itu. `TextInputType.number` hanya memilih tata letak papan ketik. Angka tetap dapat ditempel, dan papan ketik tidak memeriksa rentang maupun hubungan antarkolom. [Alur Simpan](lib/screens/education_form.dart) · [Aturan validasi](lib/validation/education_validators.dart) · [Tes validator](test/education_validators_test.dart)
 
 ## Tugas 7
 
@@ -299,13 +293,28 @@ Melalui pengembangan fitur-fitur tambahan tersebut, saya berusaha membuat MyPort
 
 ## AI Disclosure
 
+### Tugas 8 — log prompting dan evaluasi
+
+Saya menggunakan ChatGPT (OpenAI) untuk membaca kebutuhan tugas, membandingkan model Django dengan Flutter, menyusun dan menerapkan patch, menulis tes, serta membantu menyusun refleksi dan dokumentasi. Berikut ringkasan percakapan yang menghasilkan keputusan proyek.
+
+| Tahap | Permintaan atau keputusan saya | Hasil yang dapat diperiksa |
+|---|---|---|
+| Formulir | Saya meminta Patch 1 untuk riwayat pendidikan mengikuti model web. | Enam isian dan aturan tahun ada di model, formulir, dan validator. Ketika AI sempat menilai Patch 1 belum selesai karena menu belum terhubung, saya menunjukkan kembali pembagian patch. Navigasi kemudian diperiksa sebagai Patch 2. |
+| Navigasi dan tes | Saya mengizinkan perubahan langsung untuk Patch 2 dan 3, serta mempertahankan commit dan push sebagai pekerjaan saya. | Kartu dan drawer membuka formulir. Tes memeriksa jalur kembali, kesalahan isian, dialog, dan tombol Simpan ketika papan ketik terbuka. |
+| Fitur ekstra | Saya memilih daftar kartu dengan filter jenjang dan urutan tahun masuk sebagai pengganti usulan linimasa. | Pengujian memakai dua sekolah SMA/SMK dengan tahun masuk berbeda. Hasilnya menunjukkan bahwa filter tetap berlaku saat urutan dibalik. |
+| Dokumentasi | Saya meminta Patch 5 diterapkan pada repositori yang sudah memuat empat patch sebelumnya. | README merujuk ke kode dan commit yang ada. Hasil 17 tes dan analisis dicatat setelah dijalankan ulang. |
+
+Dua koreksi implementasi berasal dari pengujian. Header drawer sempat melampaui ruangnya, sehingga tinggi header dibuat mengikuti isi. Saat alur beranda diuji pada lebar 320 pixel, label kartu juga melampaui ruang vertikal. Grid kemudian memakai sel persegi agar label memiliki ruang. Perbaikan kode dan pemeriksaan otomatis tersebut dibantu AI. Keputusan mengganti fitur ekstra serta pembagian tanggung jawab commit dan push berasal dari saya sendiri.
+
+### Catatan penggunaan AI pada Tugas 7
+
 AI digunakan sebagai alat bantu selama pengerjaan, bukan sebagai pengganti pemahaman, keputusan, atau tanggung jawab pengembang. Informasi berikut menjelaskan penggunaan AI pada tugas ini secara spesifik.
 
-### Tools yang digunakan
+#### Tools yang digunakan
 
 - **ChatGPT (OpenAI):** membantu membaca instruksi dan rubrik dari PDF, meninjau struktur serta kode proyek Flutter, menyarankan pembagian pengerjaan, membantu menyiapkan patch kode dan widget test pada tahap sebelumnya, serta membantu menyusun dokumentasi dan jawaban reflektif pada README ini.
 
-### Strategi prompting
+#### Strategi prompting
 
 Proses bantuan AI dilakukan secara bertahap dan berbasis konteks proyek:
 
@@ -314,7 +323,7 @@ Proses bantuan AI dilakukan secara bertahap dan berbasis konteks proyek:
 3. Meminta analisis struktur terlebih dahulu sebelum meminta perubahan, serta menetapkan batasan agar file proyek tidak diubah tanpa persetujuan.
 4. Memecah pekerjaan menjadi patch terpisah untuk fitur utama, pengujian, fitur ekstra, dan dokumentasi agar perubahan dapat ditinjau dan di-commit secara bertahap.
 
-### Bagian yang dibantu AI
+#### Bagian yang dibantu AI
 
 - Menguraikan persyaratan tugas dan menghubungkannya dengan struktur proyek.
 - Membantu merancang dan menyiapkan perubahan kartu aksi, model data item, warna kartu, serta umpan balik `SnackBar`.
@@ -322,14 +331,14 @@ Proses bantuan AI dilakukan secara bertahap dan berbasis konteks proyek:
 - Membantu menyiapkan fitur ekstra bottom sheet `Tentang Portofolio`.
 - Membantu menyusun uraian struktur aplikasi, enam jawaban reflektif, instruksi setup, catatan progres, dan bagian AI disclosure ini.
 
-### Evaluasi kritis atas keterbatasan AI dan tanggung jawab pengembang
+#### Evaluasi kritis atas keterbatasan AI dan tanggung jawab pengembang
 
 AI dapat menghasilkan kode atau penjelasan yang tampak masuk akal tetapi belum tentu cocok dengan versi SDK, struktur proyek, atau perilaku aplikasi pada perangkat sebenarnya. AI juga dapat salah menafsirkan requirement, mengasumsikan fitur telah berjalan padahal baru berupa contoh interaksi, atau menyatakan pengujian berhasil tanpa benar-benar menjalankannya. Karena itu, hasil AI tidak langsung dianggap benar dan tetap perlu dibandingkan dengan kode serta rubrik tugas.
 
 Beberapa keputusan dan pemeriksaan yang menjadi tanggung jawab pengembang:
 
 - Mengintegrasikan hasil patch ke repositori secara bertahap dalam commit yang terpisah, bukan menyerahkan akses commit/push kepada AI.
-- Menggunakan identitas pemilik portofolio sendiri (`2506587150`, `Adriel Raynard Davis Sihotang`, dan `PBP B`) alih-alih membiarkan data contoh tutorial tetap digunakan. Keakuratan data ini tetap harus dipastikan oleh pemilik sebelum pengumpulan.
+- Menggunakan identitas pemilik portofolio sendiri (`2506587150`, `Adriel Raynard Davis Sihotang`, dan `PBP B`), bukannya malah membiarkan data contoh tutorial tetap digunakan. Keakuratan data ini tetap harus dipastikan oleh pemilik sebelum pengumpulan.
 - Memilih fitur tambahan yang masih relevan dengan konteks portofolio, yaitu ringkasan profil dalam bottom sheet, tanpa mengubah fokus tugas menjadi aplikasi CRUD atau autentikasi.
 - Menjaga dokumentasi agar tidak melebih-lebihkan kemampuan aplikasi: tiga aksi utama saat ini menampilkan `SnackBar`, bukan benar-benar mengelola data proyek atau melakukan logout.
 - Menjalankan `flutter analyze`, `flutter test`, serta uji manual pada emulator/perangkat sebelum pengumpulan. Hasil validasi harus berasal dari eksekusi lokal pengembang; dokumentasi ini tidak mengarang hasil pengujian yang belum dikonfirmasi.
@@ -339,5 +348,8 @@ AI membantu mempercepat eksplorasi dan penyusunan solusi, tetapi keputusan akhir
 ## Referensi
 
 - [Flutter documentation](https://docs.flutter.dev/)
+- [Flutter API — Navigator.push](https://api.flutter.dev/flutter/widgets/Navigator/push.html)
+- [Flutter API — Navigator.pushReplacement](https://api.flutter.dev/flutter/widgets/Navigator/pushReplacement.html)
+- [Flutter Cookbook — Build a form with validation](https://docs.flutter.dev/cookbook/forms/validation)
 - [Flutter: Hot reload](https://docs.flutter.dev/tools/hot-reload)
 - [Dart documentation](https://dart.dev/guides)
