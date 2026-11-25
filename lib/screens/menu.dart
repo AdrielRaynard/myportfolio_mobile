@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/screens/education_form.dart';
 import 'package:myportofolio_mobile/screens/education_list.dart';
+import 'package:myportofolio_mobile/widgets/auth_guard.dart';
 import 'package:myportofolio_mobile/widgets/left_drawer.dart';
 import 'package:myportofolio_mobile/widgets/project_card.dart';
 
@@ -29,7 +30,7 @@ class MyHomePage extends StatelessWidget {
       name: 'Logout',
       icon: Icons.logout,
       color: Colors.deepOrange,
-      action: PortfolioAction.showFeedback,
+      action: PortfolioAction.logout,
     ),
     ItemHomepage(
       name: 'Tentang Portofolio',
@@ -51,7 +52,7 @@ class MyHomePage extends StatelessWidget {
     ),
   ];
 
-  void _handleItemTap(BuildContext context, ItemHomepage item) {
+  Future<void> _handleItemTap(BuildContext context, ItemHomepage item) async {
     switch (item.action) {
       case PortfolioAction.listEducation:
         Navigator.push<void>(
@@ -60,10 +61,14 @@ class MyHomePage extends StatelessWidget {
         );
         return;
       case PortfolioAction.addEducation:
+        if (!await ensureLoggedIn(context) || !context.mounted) return;
         Navigator.push<void>(
           context,
           MaterialPageRoute<void>(builder: (_) => const EducationFormPage()),
         );
+        return;
+      case PortfolioAction.logout:
+        await logoutWithFeedback(context);
         return;
       case PortfolioAction.showFeedback:
         _showActionFeedback(context, item);
@@ -203,7 +208,13 @@ class InfoCard extends StatelessWidget {
 }
 
 /// Menentukan respons saat kartu aksi pada halaman utama ditekan.
-enum PortfolioAction { showFeedback, showOverview, addEducation, listEducation }
+enum PortfolioAction {
+  showFeedback,
+  showOverview,
+  addEducation,
+  listEducation,
+  logout,
+}
 
 /// Model data untuk satu aksi pada halaman utama.
 class ItemHomepage {

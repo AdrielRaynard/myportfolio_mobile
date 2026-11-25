@@ -1,6 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
 import 'package:material_ui/material_ui.dart';
-import 'package:myportofolio_mobile/main.dart';
 import 'package:myportofolio_mobile/screens/education_form.dart';
 import 'package:myportofolio_mobile/screens/menu.dart';
 
@@ -28,6 +30,43 @@ void expectSummaryValue(String label, String value) {
 
 void main() {
   testWidgets(
+    '401 meminta login ulang dan kegagalan POST mempertahankan isian',
+    (tester) async {
+      var attempts = 0;
+      await openForm(
+        tester,
+        app: educationApp(
+          handleEducation: (request) async {
+            expect(request.headers['Authorization'], 'Token test-token');
+            final entry = jsonDecode(request.body);
+            expect(entry['nama_sekolah'], 'SMA Melati');
+            return switch (++attempts) {
+              1 => http.Response('', 401),
+              2 => http.Response('', 403),
+              _ => http.Response(jsonEncode(entry), 201),
+            };
+          },
+        ),
+      );
+      await enterField(tester, school, 'SMA Melati');
+      await enterField(tester, startYear, '2025');
+      await saveForm(tester);
+      expect(find.widgetWithText(ElevatedButton, 'Login'), findsOneWidget);
+      await login(tester);
+      expect(attempts, 1);
+      await tester.pump(const Duration(seconds: 5));
+      await tester.pumpAndSettle();
+      await saveForm(tester);
+      expect(find.textContaining('HTTP 403'), findsOneWidget);
+      expect(find.byType(AlertDialog), findsNothing);
+      await tester.pump(const Duration(seconds: 5));
+      await tester.pumpAndSettle();
+      await saveForm(tester);
+      expectSummaryValue(school, 'SMA Melati');
+    },
+  );
+
+  testWidgets(
     'kartu membuka formulir dan tombol kembali perangkat menuju beranda',
     (tester) async {
       await openForm(tester);
@@ -42,11 +81,17 @@ void main() {
   testWidgets('drawer membuka formulir dan Home kembali ke beranda semula', (
     tester,
   ) async {
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(educationApp());
     await chooseFromDrawer(tester, 'Tambah Pendidikan');
+    expect(find.byType(EducationFormPage), findsNothing);
+    await login(tester);
     expect(find.byType(EducationFormPage), findsOneWidget);
 
     await chooseFromDrawer(tester, 'Home');
+    expectHome(tester);
+    await chooseFromDrawer(tester, 'Tambah Pendidikan');
+    expect(find.byType(EducationFormPage), findsOneWidget);
+    await chooseFromDrawer(tester, 'Logout');
     expectHome(tester);
   });
 

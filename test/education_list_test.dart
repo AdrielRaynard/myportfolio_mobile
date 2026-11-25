@@ -1,8 +1,49 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
+import 'package:myportofolio_mobile/models/education.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:myportofolio_mobile/main.dart';
 
 import 'helpers/education_navigation.dart';
+
+// Data awal dari main/migrations/0003_populate_education.py di repo web.
+const initialEducation = [
+  Education(
+    schoolName: 'SMPK PENABUR Bintaro Jaya',
+    level: EducationLevel.smp,
+    startYear: 2019,
+    graduationYear: 2022,
+    description: 'Menyelesaikan pendidikan jenjang menengah pertama.',
+  ),
+  Education(
+    schoolName: 'SMAK PENABUR Bintaro Jaya',
+    level: EducationLevel.sma,
+    major: 'Matematika dan Ilmu Pengetahuan Alam (MIPA)',
+    startYear: 2022,
+    graduationYear: 2025,
+    description:
+        'Menyelesaikan pendidikan jenjang menengah atas dengan fokus '
+        'pada matematika dan ilmu pengetahuan alam.',
+  ),
+  Education(
+    schoolName: 'Fakultas Ilmu Komputer, Universitas Indonesia',
+    level: EducationLevel.s1,
+    major: 'Sistem Informasi',
+    startYear: 2025,
+    description:
+        'Sedang menempuh studi S1 Sistem Informasi di Fakultas Ilmu '
+        'Komputer Universitas Indonesia.',
+  ),
+];
+
+Widget testApp({MockClientHandler? handler}) {
+  return educationApp(
+    entries: initialEducation.map((entry) => entry.toJson()).toList(),
+    handleEducation: handler,
+  );
+}
 
 const university = 'Fakultas Ilmu Komputer, Universitas Indonesia';
 const highSchool = 'SMAK PENABUR Bintaro Jaya';
@@ -19,8 +60,8 @@ Future<void> selectOption(
   await tester.pumpAndSettle();
 }
 
-Future<void> openList(WidgetTester tester) async {
-  await tester.pumpWidget(const MyApp());
+Future<void> openList(WidgetTester tester, {MockClientHandler? handler}) async {
+  await tester.pumpWidget(testApp(handler: handler));
   final card = find.text('Daftar Pendidikan');
   await tester.ensureVisible(card);
   await tester.tap(card);
@@ -35,6 +76,43 @@ void expectAbove(WidgetTester tester, String first, String second) {
 }
 
 void main() {
+  testWidgets('coba lagi, tarik daftar kosong, lalu buka detail', (
+    tester,
+  ) async {
+    var calls = 0;
+    await openList(
+      tester,
+      handler: (request) async {
+        expect(request.url.path, '/api/v1/educations/');
+        calls++;
+        return switch (calls) {
+          1 => http.Response('<html>debug</html>', 503),
+          2 => http.Response('[]', 200),
+          _ => http.Response(
+            jsonEncode([initialEducation.first.toJson()]),
+            200,
+          ),
+        };
+      },
+    );
+    expect(find.textContaining('debug'), findsNothing);
+    await tester.tap(find.text('Coba lagi'));
+    await tester.pumpAndSettle();
+    expect(find.text('Belum ada riwayat pendidikan.'), findsOneWidget);
+    await tester.fling(
+      find.byType(CustomScrollView),
+      const Offset(0, 400),
+      1000,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(middleSchool));
+    await tester.pumpAndSettle();
+    expect(find.text('Detail Pendidikan'), findsOneWidget);
+    expect(find.text(middleSchool), findsOneWidget);
+    expect(find.byType(Image), findsNothing);
+    expect(calls, 3);
+  });
+
   testWidgets(
     'daftar awal diurutkan berdasarkan tahun masuk dan menampilkan data web',
     (tester) async {
@@ -74,7 +152,7 @@ void main() {
     'entri formulir ikut difilter dan kedua urutan bekerja pada jenjang yang sama',
     (tester) async {
       const otherSchool = 'SMA Melati';
-      await openForm(tester);
+      await openForm(tester, app: testApp());
       await enterField(tester, 'Nama Sekolah / Universitas', otherSchool);
       await selectOption(tester, 'S1 (Sarjana)', 'SMA/SMK');
       await enterField(tester, 'Tahun Masuk', '2020');

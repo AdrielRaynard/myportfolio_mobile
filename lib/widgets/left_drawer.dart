@@ -2,6 +2,9 @@ import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/screens/education_form.dart';
 import 'package:myportofolio_mobile/screens/education_list.dart';
 import 'package:myportofolio_mobile/screens/project_form.dart';
+import 'package:myportofolio_mobile/services/auth_state.dart';
+import 'package:myportofolio_mobile/widgets/auth_guard.dart';
+import 'package:provider/provider.dart';
 
 enum DrawerDestination { home, project, education, educationList }
 
@@ -10,7 +13,10 @@ class LeftDrawer extends StatelessWidget {
 
   final DrawerDestination current;
 
-  void _navigate(BuildContext context, DrawerDestination destination) {
+  Future<void> _navigate(
+    BuildContext context,
+    DrawerDestination destination,
+  ) async {
     final navigator = Navigator.of(context);
     navigator.pop(); // Tutup drawer sebelum berpindah halaman.
     if (destination == current) return;
@@ -21,6 +27,7 @@ class LeftDrawer extends StatelessWidget {
         navigator.popUntil((route) => route.isFirst);
         return;
       case DrawerDestination.education:
+        if (!await ensureLoggedIn(context) || !context.mounted) return;
         page = const EducationFormPage();
       case DrawerDestination.project:
         page = const ProjectFormPage();
@@ -37,6 +44,8 @@ class LeftDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLoggedIn = context.watch<AuthState>().isLoggedIn;
+    final pageContext = Scaffold.of(context).context;
     return Drawer(
       child: ListView(
         children: [
@@ -80,13 +89,29 @@ class LeftDrawer extends StatelessWidget {
             leading: const Icon(Icons.school_outlined),
             title: const Text('Tambah Pendidikan'),
             selected: current == DrawerDestination.education,
-            onTap: () => _navigate(context, DrawerDestination.education),
+            onTap: () => _navigate(pageContext, DrawerDestination.education),
           ),
           ListTile(
             leading: const Icon(Icons.list_alt_outlined),
             title: const Text('Daftar Pendidikan'),
             selected: current == DrawerDestination.educationList,
             onTap: () => _navigate(context, DrawerDestination.educationList),
+          ),
+          ListTile(
+            leading: Icon(isLoggedIn ? Icons.logout : Icons.login),
+            title: Text(isLoggedIn ? 'Logout' : 'Login'),
+            onTap: () async {
+              Navigator.pop(context);
+              if (!isLoggedIn) {
+                await ensureLoggedIn(pageContext);
+                return;
+              }
+              await logoutWithFeedback(pageContext);
+              if (current == DrawerDestination.education &&
+                  pageContext.mounted) {
+                Navigator.of(pageContext).popUntil((route) => route.isFirst);
+              }
+            },
           ),
         ],
       ),

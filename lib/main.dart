@@ -1,31 +1,34 @@
 import 'package:material_ui/material_ui.dart';
-import 'package:myportofolio_mobile/models/education.dart';
-import 'package:myportofolio_mobile/models/education_history.dart';
 import 'package:myportofolio_mobile/screens/menu.dart';
+import 'package:myportofolio_mobile/services/api_client.dart';
+import 'package:myportofolio_mobile/services/auth_state.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({this.apiClient, super.key});
 
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  List<Education> _entries = initialEducation;
-
-  void _addEducation(Education entry) {
-    setState(() => _entries = List.unmodifiable([..._entries, entry]));
-  }
+  final ApiClient? apiClient;
 
   @override
   Widget build(BuildContext context) {
-    return EducationHistory(
-      entries: _entries,
-      add: _addEducation,
+    final client = apiClient ?? context.watch<ApiClient?>();
+    return MultiProvider(
+      providers: [
+        if (client != null)
+          Provider<ApiClient>.value(value: client)
+        else
+          Provider<ApiClient>(
+            create: (_) => ApiClient(),
+            dispose: (_, client) => client.close(),
+          ),
+        ChangeNotifierProvider<AuthState>(
+          create: (context) => AuthState(context.read<ApiClient>()),
+        ),
+      ],
       child: MaterialApp(
         title: 'MyPortfolio',
         theme: ThemeData(

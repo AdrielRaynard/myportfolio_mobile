@@ -1,6 +1,10 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/models/education.dart';
-import 'package:myportofolio_mobile/models/education_history.dart';
+import 'package:http/http.dart' as http;
+import 'package:myportofolio_mobile/services/api_client.dart';
+import 'package:myportofolio_mobile/services/auth_state.dart';
+import 'package:myportofolio_mobile/widgets/auth_guard.dart';
+import 'package:provider/provider.dart';
 import 'package:myportofolio_mobile/validation/education_validators.dart';
 import 'package:myportofolio_mobile/widgets/left_drawer.dart';
 
@@ -19,6 +23,7 @@ class _EducationFormPageState extends State<EducationFormPage> {
   final _graduation = TextEditingController();
   final _description = TextEditingController();
   EducationLevel _level = EducationLevel.s1;
+  bool _saving = false;
 
   @override
   void dispose() {
@@ -30,8 +35,8 @@ class _EducationFormPageState extends State<EducationFormPage> {
     super.dispose();
   }
 
-  void _submit() {
-    if (!_formKey.currentState!.validate()) return;
+  Future<void> _submit() async {
+    if (_saving || !_formKey.currentState!.validate()) return;
     FocusScope.of(context).unfocus();
 
     final major = EducationValidators.plainText(_major.text);
@@ -43,11 +48,45 @@ class _EducationFormPageState extends State<EducationFormPage> {
       graduationYear: int.tryParse(_graduation.text.trim(), radix: 10),
       description: EducationValidators.plainText(_description.text),
     );
-    EducationHistory.of(context).add(education);
-    showDialog<void>(
-      context: context,
-      builder: (context) => _EducationSummary(education: education),
-    );
+    setState(() => _saving = true);
+    try {
+      if (!await ensureLoggedIn(context) || !mounted) return;
+      final token = context.read<AuthState>().token;
+      if (token == null) return;
+      final saved = await context.read<ApiClient>().createEducation(
+        education,
+        token: token,
+      );
+      if (!mounted || ModalRoute.of(context)?.isCurrent != true) return;
+      await showDialog<void>(
+        context: context,
+        builder: (_) => _EducationSummary(education: saved),
+      );
+    } on ApiException catch (error) {
+      if (!mounted || ModalRoute.of(context)?.isCurrent != true) return;
+      if (error.statusCode == 401) {
+        await context.read<AuthState>().logout();
+        if (!mounted || ModalRoute.of(context)?.isCurrent != true) return;
+        final loggedIn = await ensureLoggedIn(context);
+        if (!mounted) return;
+        if (!loggedIn) {
+          Navigator.of(context).maybePop();
+          return;
+        }
+        _message('Login berhasil. Tekan Simpan untuk mengirim ulang.');
+      } else {
+        _message('Gagal menyimpan pendidikan (HTTP ${error.statusCode}).');
+      }
+    } on http.ClientException {
+      if (mounted) _message('Gagal terhubung ke server. Coba lagi.');
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  void _message(String message) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   InputDecoration _decoration(String label, {String? hint, String? help}) {
@@ -146,8 +185,8 @@ class _EducationFormPageState extends State<EducationFormPage> {
                       maxLines: 6,
                     ),
                     FilledButton(
-                      onPressed: _submit,
-                      child: const Text('Simpan'),
+                      onPressed: _saving ? null : _submit,
+                      child: Text(_saving ? 'Menyimpan…' : 'Simpan'),
                     ),
                   ],
                 ),
@@ -183,6 +222,10 @@ class _EducationSummary extends StatelessWidget {
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const Padding(
+            padding: EdgeInsets.only(bottom: 12),
+            child: Text('Riwayat pendidikan berhasil disimpan.'),
+          ),
           for (final field in fields.entries)
             Padding(
               padding: const EdgeInsets.only(bottom: 12),

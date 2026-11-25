@@ -62,7 +62,14 @@ void main() {
       // Tunggu animasi SnackBar sampai selesai.
       await tester.pumpAndSettle();
 
-      expect(find.text('Kamu telah menekan tombol $action!'), findsOneWidget);
+      expect(
+        find.text(
+          action == 'Logout'
+              ? 'Kamu belum login.'
+              : 'Kamu telah menekan tombol $action!',
+        ),
+        findsOneWidget,
+      );
 
       // Bersihkan SnackBar sebelum menguji aksi berikutnya.
       await tester.pump(const Duration(seconds: 5));
