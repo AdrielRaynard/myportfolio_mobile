@@ -44,6 +44,17 @@ class ApiClient {
         .toList();
   }
 
+  Future<Education> getEducation(String id) async {
+    final response = await _client.get(
+      _uri('$_educations${Uri.encodeComponent(id)}/'),
+      headers: _accept,
+    );
+    _ensureSuccess(response);
+    return Education.fromJson(
+      jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>,
+    );
+  }
+
   Future<Education> createEducation(
     Education education, {
     required String token,
