@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/models/education.dart';
 import 'package:http/http.dart' as http;
+import 'package:myportofolio_mobile/screens/education_list.dart';
 import 'package:myportofolio_mobile/services/api_client.dart';
 import 'package:myportofolio_mobile/services/auth_state.dart';
 import 'package:myportofolio_mobile/widgets/auth_guard.dart';
@@ -49,23 +50,32 @@ class _EducationFormPageState extends State<EducationFormPage> {
       description: EducationValidators.plainText(_description.text),
     );
     setState(() => _saving = true);
+    String? requestToken;
     try {
       if (!await ensureLoggedIn(context) || !mounted) return;
       final token = context.read<AuthState>().token;
       if (token == null) return;
+      requestToken = token;
       final saved = await context.read<ApiClient>().createEducation(
         education,
         token: token,
       );
       if (!mounted || ModalRoute.of(context)?.isCurrent != true) return;
-      await showDialog<void>(
+      final openList = await showDialog<bool>(
         context: context,
         builder: (_) => _EducationSummary(education: saved),
       );
+      if (openList == true &&
+          mounted &&
+          ModalRoute.of(context)?.isCurrent == true) {
+        Navigator.of(context).pushReplacement<void, void>(
+          MaterialPageRoute(builder: (_) => const EducationListPage()),
+        );
+      }
     } on ApiException catch (error) {
       if (!mounted || ModalRoute.of(context)?.isCurrent != true) return;
-      if (error.statusCode == 401) {
-        await context.read<AuthState>().logout();
+      if (error.statusCode == 401 && requestToken != null) {
+        context.read<AuthState>().invalidateToken(requestToken);
         if (!mounted || ModalRoute.of(context)?.isCurrent != true) return;
         final loggedIn = await ensureLoggedIn(context);
         if (!mounted) return;
@@ -74,6 +84,10 @@ class _EducationFormPageState extends State<EducationFormPage> {
           return;
         }
         _message('Login berhasil. Tekan Simpan untuk mengirim ulang.');
+      } else if (error.statusCode == 403) {
+        _message(
+          'Akun ini tidak memiliki izin menyimpan pendidikan (HTTP 403).',
+        );
       } else {
         _message('Gagal menyimpan pendidikan (HTTP ${error.statusCode}).');
       }
@@ -245,7 +259,11 @@ class _EducationSummary extends StatelessWidget {
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.pop(context, true),
+          child: const Text('Lihat daftar'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
           child: const Text('Tutup'),
         ),
       ],

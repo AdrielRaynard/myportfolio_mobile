@@ -17,6 +17,12 @@ class AuthState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void invalidateToken(String rejectedToken) {
+    if (_token != rejectedToken) return;
+    _token = null;
+    notifyListeners();
+  }
+
   Future<void> logout() async {
     final current = _token;
     if (current == null) return;
@@ -28,8 +34,7 @@ class AuthState extends ChangeNotifier {
     } on http.ClientException {
       // The local session also ends when the server is unreachable.
     } finally {
-      _token = null;
-      notifyListeners();
+      invalidateToken(current);
     }
   }
 }
